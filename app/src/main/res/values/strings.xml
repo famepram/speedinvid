@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Speedinvid</string>
+    <string name="spinner_prompt_speed">Speed</string>
+    <string name="spinner_prompt_quality">Quality</string>
+    <string-array name="speed_array">
+        <item>2x</item>
+        <item>4x</item>
+        <item>8x</item>
+        <item>12x</item>
+        <item>16x</item>
+    </string-array>
+    <string-array name="quality_array">
+        <item>Very High</item>
+        <item>High</item>
+        <item>Medium</item>
+        <item>Low</item>
+    </string-array>
+</resources>

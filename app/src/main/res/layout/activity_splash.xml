@@ -4,12 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_big"
     tools:context="ekalaya.id.speedinvid.ui.splash.SplashActivity">
-
+    <RelativeLayout
+        android:id="@+id/bg_overlay"
+        android:background="@drawable/grd_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></RelativeLayout>
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="Speedinvid" />
-
+        android:layout_width="wrap_content"
+        android:text="SPEEDINVID"
+        android:textSize="32sp"
+        android:textColor="@color/colorGreyText"
+        android:layout_height="wrap_content" />
 </RelativeLayout>

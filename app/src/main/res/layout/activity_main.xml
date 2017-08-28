@@ -4,13 +4,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_big"
     tools:context="ekalaya.id.speedinvid.ui.main.MainActivity">
-    <Button
-        android:id="@+id/btn_browse_video"
+    <RelativeLayout
+        android:id="@+id/bg_overlay"
+        android:background="@drawable/grd_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/wrap_btn_browse_video"
         android:layout_centerInParent="true"
+        android:background="@drawable/bg_circle_outlined"
+        android:layout_width="100dp"
+        android:layout_height="100dp">
+        <Button
+            android:id="@+id/btn_browse_video"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:layout_width="40dp"
+            android:layout_height="50dp"
+            android:background="@mipmap/ic_movie" />
+    </FrameLayout>
+    <TextView
+        android:layout_marginTop="16dp"
+        android:layout_below="@+id/wrap_btn_browse_video"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="16dp"
-        android:text="Browse Video"/>
-
+        android:textColor="@color/colorWhite"
+        android:layout_centerHorizontal="true"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="Import Files"/>
 </RelativeLayout>

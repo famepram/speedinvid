@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="10"
+    android:background="@drawable/grd_tl"
     tools:context="ekalaya.id.speedinvid.ui.editor.EditorActivity">
     <RelativeLayout
         android:layout_width="match_parent"
@@ -32,62 +33,25 @@
     </RelativeLayout>
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_marginTop="8dp"
-        android:layout_weight="2"
-        android:layout_height="0dp">
-        <include layout="@layout/video_timeline"/>
-    </RelativeLayout>
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:orientation="horizontal"
         android:layout_height="0dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_weight="2">
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_height="match_parent">
-            <TextView
-                android:text="Timelapse Speed"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-            <Spinner
-                android:id="@+id/spinner_speed"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:prompt="@string/spinner_prompt_speed" />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_height="match_parent">
-            <TextView
-                android:text="Result Quality"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-            <Spinner
-                android:id="@+id/spinner_quality"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:prompt="@string/spinner_prompt_quality" />
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_weight="3">
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:elevation="6dp"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="@style/Base.Widget.Design.TabLayout"
+            app:tabTextAppearance="@style/TabText" />
 
-        </LinearLayout>
-    </LinearLayout>
-    <RelativeLayout
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_width="match_parent">
-        <Button
-            android:id="@+id/btn_next"
-            android:text="Process"
-            android:layout_centerInParent="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+        <android.support.v4.view.ViewPager
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_below="@id/tab_layout"/>
     </RelativeLayout>
 
 </LinearLayout>

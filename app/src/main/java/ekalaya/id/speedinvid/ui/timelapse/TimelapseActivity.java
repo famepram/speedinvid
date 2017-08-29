@@ -1,23 +1,32 @@
 package ekalaya.id.speedinvid.ui.timelapse;
 
+import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
+import android.support.design.widget.TabLayout;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.VideoView;
 
@@ -33,6 +42,10 @@ import ekalaya.id.speedinvid.R;
 import ekalaya.id.speedinvid.application.App;
 import ekalaya.id.speedinvid.data.models.VideoSource;
 import ekalaya.id.speedinvid.ui.finish.FinishActivity;
+import ekalaya.id.speedinvid.ui.main.MainActivity;
+import ekalaya.id.speedinvid.ui.timelapse.fragments.FragmentTimelapseQuality;
+import ekalaya.id.speedinvid.ui.timelapse.fragments.FragmentTimelapseSpeed;
+import ekalaya.id.speedinvid.ui.timelapse.fragments.FragmentTimelapseTrim;
 import ekalaya.id.speedinvid.util.Const;
 import ekalaya.id.speedinvid.util.Helper;
 import ekalaya.id.speedinvid.util.VideoProcessor;
@@ -42,6 +55,9 @@ public class TimelapseActivity extends AppCompatActivity
                                        OnRangeSeekbarChangeListener,
                                        MediaPlayer.OnPreparedListener,
                                        View.OnClickListener,VideoView.OnTouchListener,
+                                        FragmentTimelapseTrim.OnFragmentInteractionListener,
+                                        FragmentTimelapseSpeed.OnFragmentInteractionListener,
+                                        FragmentTimelapseQuality.OnFragmentInteractionListener,
                                         VideoProcessor.VPCallback {
 
     @Inject
@@ -71,6 +87,12 @@ public class TimelapseActivity extends AppCompatActivity
 
     private ProgressDialog progressDialog;
 
+    TabLayout tabLayout;
+
+    ViewPager viewPager;
+
+    TimelapseTabAdapter tabAdapter;
+
     VideoSource videoSource;
 
     private Runnable r;
@@ -81,15 +103,49 @@ public class TimelapseActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        initWindow();
         setContentView(R.layout.activity_timelapse);
 
         actvComponent = DaggerTimelapseComponent.builder()
                 .timelapseModule(new TimelapseModule(this))
                 .appComponent(App.get(this).getComponent()).build();
         actvComponent.inject(this);
-        initUI();
-        initIntent();
-        loadVP();
+
+        initTab();
+        //initUI();
+//        initIntent();
+//        loadVP();
+    }
+
+    private void initTab(){
+        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        tabLayout.addTab(tabLayout.newTab().setText("TRIM"));
+        tabLayout.addTab(tabLayout.newTab().setText("SPEED"));
+        tabLayout.addTab(tabLayout.newTab().setText("QUALITY"));
+
+        viewPager = (ViewPager) findViewById(R.id.pager);
+        tabAdapter = new TimelapseTabAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+        viewPager.setAdapter(tabAdapter);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        viewPager.setOnTouchListener(new View.OnTouchListener(){
+            @Override
+            public boolean onTouch(View v, MotionEvent event){
+                return true;
+            }
+        });
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {}
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {}
+        });
     }
 
     private void loadVP(){
@@ -98,66 +154,77 @@ public class TimelapseActivity extends AppCompatActivity
         mVP.loadFFMEPEG(getApplicationContext());
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void initWindow(){
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        Window window = getWindow();
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(ContextCompat.getColor(this,R.color.colorGreyDark));
+    }
+
     private void initUI(){
-        mVideoView      = (VideoView) findViewById(R.id.vv_editor);
-
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
-        mLayoutManager.setOrientation(LinearLayout.HORIZONTAL);
-        mRecycleView    = (RecyclerView) findViewById(R.id.my_recycler_view);
-        mRecycleView.setLayoutManager(mLayoutManager);
-        mAdapter        = new TimelineVideoAdapter(null,getApplicationContext());
-        mRecycleView.setAdapter(mAdapter);
-
-        rlPauseOverlay = (RelativeLayout) findViewById(R.id.pause_overlay);
-        rlPauseOverlay.setOnClickListener(this);
-
-        rlLeft      = (RelativeLayout) findViewById(R.id.rl_left_space);
-        rlCenter    = (RelativeLayout) findViewById(R.id.rl_center_space);
-        rlRight     = (RelativeLayout) findViewById(R.id.rl_right_space);
-        mSeekbar    = (CrystalRangeSeekbar) findViewById(R.id.rangeSeekbar);
-
-        btnProcess  = (Button) findViewById(R.id.btn_next);
-        btnProcess.setOnClickListener(this);
-
-        spinnerSpeed    = (Spinner) findViewById(R.id.spinner_speed);
-        ArrayAdapter<CharSequence> adapterSpeed = ArrayAdapter.createFromResource(this,
-                R.array.speed_array, android.R.layout.simple_spinner_item);
-        spinnerSpeed.setAdapter(adapterSpeed);
-
-        spinnerQuality  = (Spinner) findViewById(R.id.spinner_quality);
-        ArrayAdapter<CharSequence> adapterQty = ArrayAdapter.createFromResource(this,
-                R.array.quality_array, android.R.layout.simple_spinner_item);
-        spinnerQuality.setAdapter(adapterQty);
-
-        pl = (LinearLayout.LayoutParams) rlLeft.getLayoutParams();
-        pc = (LinearLayout.LayoutParams) rlCenter.getLayoutParams();
-        pr = (LinearLayout.LayoutParams) rlRight.getLayoutParams();
-
-        tvstart = (TextView) findViewById(R.id.tv_vidstart);
-        tvend   = (TextView) findViewById(R.id.tv_vidend);
-        tvprog  = (TextView) findViewById(R.id.tv_vidprogress);
-
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setTitle(null);
-        progressDialog.setCancelable(false);
-
-        r = new Runnable(){
-            @Override
-            public void run() {
-                int cur_pos = mVideoView.getCurrentPosition();
-                tvprog.setText(Helper.formatTime(cur_pos));
-                if(Math.ceil(cur_pos/500) >= (Math.ceil(videoSource.getFinish()/500) )){
-                    mVideoView.seekTo(videoSource.getStart());
-                }
-                handler.postDelayed(r,200);
-            }
-        };
+//        mVideoView      = (VideoView) findViewById(R.id.vv_editor);
+//
+//        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+//        mLayoutManager.setOrientation(LinearLayout.HORIZONTAL);
+//        mRecycleView    = (RecyclerView) findViewById(R.id.my_recycler_view);
+//        mRecycleView.setLayoutManager(mLayoutManager);
+//        mAdapter        = new TimelineVideoAdapter(null,getApplicationContext());
+//        mRecycleView.setAdapter(mAdapter);
+//
+//        rlPauseOverlay = (RelativeLayout) findViewById(R.id.pause_overlay);
+//        rlPauseOverlay.setOnClickListener(this);
+//
+//        rlLeft      = (RelativeLayout) findViewById(R.id.rl_left_space);
+//        rlCenter    = (RelativeLayout) findViewById(R.id.rl_center_space);
+//        rlRight     = (RelativeLayout) findViewById(R.id.rl_right_space);
+//        mSeekbar    = (CrystalRangeSeekbar) findViewById(R.id.rangeSeekbar);
+//
+//        btnProcess  = (Button) findViewById(R.id.btn_next);
+//        btnProcess.setOnClickListener(this);
+//
+//        spinnerSpeed    = (Spinner) findViewById(R.id.spinner_speed);
+//        ArrayAdapter<CharSequence> adapterSpeed = ArrayAdapter.createFromResource(this,
+//                R.array.speed_array, android.R.layout.simple_spinner_item);
+//        spinnerSpeed.setAdapter(adapterSpeed);
+//
+//        spinnerQuality  = (Spinner) findViewById(R.id.spinner_quality);
+//        ArrayAdapter<CharSequence> adapterQty = ArrayAdapter.createFromResource(this,
+//                R.array.quality_array, android.R.layout.simple_spinner_item);
+//        spinnerQuality.setAdapter(adapterQty);
+//
+//        pl = (LinearLayout.LayoutParams) rlLeft.getLayoutParams();
+//        pc = (LinearLayout.LayoutParams) rlCenter.getLayoutParams();
+//        pr = (LinearLayout.LayoutParams) rlRight.getLayoutParams();
+//
+//        tvstart = (TextView) findViewById(R.id.tv_vidstart);
+//        tvend   = (TextView) findViewById(R.id.tv_vidend);
+//        tvprog  = (TextView) findViewById(R.id.tv_vidprogress);
+//
+//        progressDialog = new ProgressDialog(this);
+//        progressDialog.setTitle(null);
+//        progressDialog.setCancelable(false);
+//
+//        r = new Runnable(){
+//            @Override
+//            public void run() {
+//                int cur_pos = mVideoView.getCurrentPosition();
+//                tvprog.setText(Helper.formatTime(cur_pos));
+//                if(Math.ceil(cur_pos/500) >= (Math.ceil(videoSource.getFinish()/500) )){
+//                    mVideoView.seekTo(videoSource.getStart());
+//                }
+//                handler.postDelayed(r,200);
+//            }
+//        };
     }
 
     private void initIntent(){
         Bundle bundle = getIntent().getExtras();
-        videoPath   = bundle.getString(Const.INTENT_KEY_FILEPATH);
-//        videoPath   = "/storage/emulated/0/DCIM/Camera/V_20170826_234919_LL.mp4";
+//        videoPath   = bundle.getString(Const.INTENT_KEY_FILEPATH);
+        videoPath   = "/storage/emulated/0/DCIM/Camera/V_20170826_234919_LL.mp4";
         presenter.initializinVidSrc(videoPath);
     }
 
@@ -265,6 +332,18 @@ public class TimelapseActivity extends AppCompatActivity
         return false;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                Intent i = new Intent(TimelapseActivity.this, MainActivity.class);
+                startActivity(i);
+                finish();
+                break;
+        }
+        return true;
+    }
+
 /*
 Video Processor Callback
 ----------------------------------------------------------------------------------------------------
@@ -326,5 +405,10 @@ Video Processor Callback
     @Override
     public void onExecStart() {
         Log.d(Const.APP_TAG, "Video Processor Callback - onExecStart ");
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }

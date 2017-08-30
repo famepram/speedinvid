@@ -19,6 +19,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         getComponent().inject(this);
+        //injectDependencies();
     }
 
     public AppComponent getComponent(){
@@ -29,4 +30,5 @@ public class App extends Application {
         }
         return appComponent;
     }
+
 }

@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
@@ -14,10 +15,15 @@ import dagger.Provides;
 @Module
 public class AppModule {
 
-    private final Application mApp;
+    private final App mApp;
 
-    public AppModule(Application mApp) {
+    public AppModule(App mApp) {
         this.mApp = mApp;
+    }
+
+    @Provides @Singleton
+    public App provideApp() {
+        return mApp;
     }
 
     @Provides

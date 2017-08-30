@@ -60,8 +60,12 @@ public class TimelineVideoAdapter extends RecyclerView.Adapter<TimelineVideoAdap
             super(itemView);
             DisplayMetrics displayMetrics = ctx.getResources().getDisplayMetrics();
 //            float dpHeight = displayMetrics.heightPixels / displayMetrics.density;
-            float dpWidth = displayMetrics.widthPixels - (8 * displayMetrics.density * 2);
+            float dpWidth = displayMetrics.widthPixels - (24 * displayMetrics.density * 2);
             float perImg  = dpWidth / 8;
+            float hpad    =  dpWidth / 1080 * 1920;
+
+            
+
             img = (ImageView) itemView.findViewById(R.id.iv_rv_item);
             img.getLayoutParams().width =  (int)perImg;
             img.getLayoutParams().height =  (int)perImg;

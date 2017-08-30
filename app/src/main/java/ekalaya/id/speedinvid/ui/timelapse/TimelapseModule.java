@@ -2,6 +2,7 @@ package ekalaya.id.speedinvid.ui.timelapse;
 
 import dagger.Module;
 import dagger.Provides;
+import ekalaya.id.speedinvid.ui.timelapse.fragments.FragmentTimelapseTrimContract;
 
 /**
  * Created by Femmy on 8/26/2017.
@@ -19,4 +20,5 @@ public class TimelapseModule {
     TimelapseContract.View provideView(){
         return view;
     }
+
 }

@@ -111,11 +111,15 @@ public class TimelapseActivity extends AppCompatActivity
                 .timelapseModule(new TimelapseModule(this))
                 .appComponent(App.get(this).getComponent()).build();
         actvComponent.inject(this);
-
+        initIntent();
         initTab();
         //initUI();
-//        initIntent();
+
 //        loadVP();
+    }
+
+    public TimelapseComponent getActvComponent(){
+        return actvComponent;
     }
 
     private void initTab(){
@@ -125,7 +129,9 @@ public class TimelapseActivity extends AppCompatActivity
         tabLayout.addTab(tabLayout.newTab().setText("QUALITY"));
 
         viewPager = (ViewPager) findViewById(R.id.pager);
-        tabAdapter = new TimelapseTabAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+        tabAdapter = new TimelapseTabAdapter(getSupportFragmentManager(), tabLayout.getTabCount(),videoPath);
+
+
         viewPager.setAdapter(tabAdapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         viewPager.setOnTouchListener(new View.OnTouchListener(){
@@ -146,6 +152,7 @@ public class TimelapseActivity extends AppCompatActivity
             @Override
             public void onTabReselected(TabLayout.Tab tab) {}
         });
+
     }
 
     private void loadVP(){
@@ -225,7 +232,7 @@ public class TimelapseActivity extends AppCompatActivity
         Bundle bundle = getIntent().getExtras();
 //        videoPath   = bundle.getString(Const.INTENT_KEY_FILEPATH);
         videoPath   = "/storage/emulated/0/DCIM/Camera/V_20170826_234919_LL.mp4";
-        presenter.initializinVidSrc(videoPath);
+        //presenter.initializinVidSrc(videoPath);
     }
 
     private void processTimeLapse(){

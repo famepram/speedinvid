@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="@layout/fragment_timelapse_trim">
+    <RelativeLayout
+        android:id="@+id/vpad_timeline"
+        android:layout_width="match_parent"
+        android:layout_height="80dp">
+        <android.support.v7.widget.RecyclerView
+            android:layout_centerVertical="true"
+            android:id="@+id/my_recycler_view"
+            android:scrollbars="horizontal"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </RelativeLayout>
+    <com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar
+        android:layout_below="@+id/range_overlay"
+        android:id="@+id/rangeSeekbar"
+        app:bar_color="#80000000"
+        app:bar_highlight_color="@android:color/transparent"
+        android:minHeight="75dp"
+        android:maxHeight="75dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</RelativeLayout>

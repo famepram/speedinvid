@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import ekalaya.id.speedinvid.data.models.VideoSource;
 import ekalaya.id.speedinvid.ui.base.BasePresenter;
 import ekalaya.id.speedinvid.util.Const;
 
@@ -53,7 +54,11 @@ public class FragmentTimelapseTrimPresenter extends BasePresenter<FragmentTimela
     }
 
     @Override
-    public void seekbarvaluechanged(Number min, Number max) {
-
+    public void seekbarvaluechanged(Number min, Number max, VideoSource vs) {
+        int start = Integer.parseInt(String.valueOf(min));
+        int end   = Integer.parseInt(String.valueOf(max));
+        vs.setStart(start);
+        vs.setFinish(end);
+        view.parentVideoSrcModified(vs);
     }
 }

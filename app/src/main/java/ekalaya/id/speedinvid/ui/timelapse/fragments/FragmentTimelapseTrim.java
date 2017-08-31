@@ -4,9 +4,11 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,12 +28,11 @@ import ekalaya.id.speedinvid.R;
 import ekalaya.id.speedinvid.data.models.VideoSource;
 import ekalaya.id.speedinvid.ui.timelapse.TimelapseActivity;
 import ekalaya.id.speedinvid.ui.timelapse.TimelineVideoAdapter;
+import ekalaya.id.speedinvid.util.Const;
 
 public class FragmentTimelapseTrim extends Fragment
                                 implements FragmentTimelapseTrimContract.View,
                                             OnRangeSeekbarChangeListener{
-
-    private static final String ARG_PARAM1 = "videouri";
 
     private String videoURI;
 
@@ -51,53 +52,36 @@ public class FragmentTimelapseTrim extends Fragment
 
     LinearLayout.LayoutParams pl, pc, pr;
 
-    VideoSource vidsrc;
+    TimelapseActivity mAct;
 
     @Inject
     @Named("AppContext")
     Context context;
 
-    public FragmentTimelapseTrim() {
-    }
+    public FragmentTimelapseTrim() {}
 
-    public static FragmentTimelapseTrim newInstance(String viduri) {
-        FragmentTimelapseTrim fragment = new FragmentTimelapseTrim();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, viduri);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            videoURI = getArguments().getString(ARG_PARAM1);
-        }
-        initPresenter();
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_timelapse_trim, container, false);
         initUI(v);
-        initPresenter();
-        presenter.drawTimeline(videoURI);
-
         return v;
     }
 
 
-    private void initPresenter(){
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         presenter = new FragmentTimelapseTrimPresenter(this);
+        presenter.drawTimeline(mAct.getVidSource().getPathsrc());
     }
 
     private void initUI(View v){
-        context = ((TimelapseActivity) getActivity()).getApplicationContext();
+        mAct = (TimelapseActivity) getActivity();
+        context = mAct.getApplicationContext();
 
         mRecycleView    = (RecyclerView) v.findViewById(R.id.my_recycler_view);
-
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(context);
         mLayoutManager.setOrientation(LinearLayout.HORIZONTAL);
         mRecycleView.setLayoutManager(mLayoutManager);
@@ -108,17 +92,18 @@ public class FragmentTimelapseTrim extends Fragment
         rlLeft      = (RelativeLayout) v.findViewById(R.id.rl_left_space);
         rlCenter    = (RelativeLayout) v.findViewById(R.id.rl_center_space);
         rlRight     = (RelativeLayout) v.findViewById(R.id.rl_right_space);
+
+        pl          = (LinearLayout.LayoutParams) rlLeft.getLayoutParams();
+        pc          = (LinearLayout.LayoutParams) rlCenter.getLayoutParams();
+        pr          = (LinearLayout.LayoutParams) rlRight.getLayoutParams();
+
         mSeekbar    = (CrystalRangeSeekbar) v.findViewById(R.id.rangeSeekbar);
         tvstart     = (TextView) v.findViewById(R.id.tv_vidstart);
         tvend       = (TextView) v.findViewById(R.id.tv_vidend);
         tvprog      = (TextView) v.findViewById(R.id.tv_vidprogress);
+
     }
 
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
 
     @Override
     public void onAttach(Context context) {
@@ -140,14 +125,47 @@ public class FragmentTimelapseTrim extends Fragment
     @Override
     public void timelineDrawn(List<Bitmap> e) {
         mAdapter.setFiles(e);
+        mSeekbar.setMinValue(0);
+        mSeekbar.setMaxValue(mAct.getVidSource().getDuration());
+        mSeekbar.setOnRangeSeekbarChangeListener(this);
+    }
+
+    @Override
+    public void overlaySeekbarchange(int ml, int mr, int cw) {
+        Log.d(Const.APP_TAG,"ml :"+ml+" mr : "+mr+" cw :"+cw);
+        pl = pl == null ? (LinearLayout.LayoutParams) rlLeft.getLayoutParams() : pl;
+        pc = pc == null ? (LinearLayout.LayoutParams) rlCenter.getLayoutParams() : pc;
+        pr = pr == null ? (LinearLayout.LayoutParams) rlRight.getLayoutParams() : pr;
+
+        pl.weight = ml;
+        pc.weight = cw;
+        pr.weight = mr;
+
+        rlLeft.setLayoutParams(pl);
+        rlCenter.setLayoutParams(pc);
+        rlRight.setLayoutParams(pr);
+    }
+
+    @Override
+    public void parentVideoSrcModified(VideoSource e) {
+        mListener.videoModified(e);
+        overlaySeekbarchange(e.getPercentStartCut(), e.getPercentFinishCut(), e.getPercentTrimmed());
+        setTextTime(e.getFormattedStart(),e.getFormattedFinish());
     }
 
     @Override
     public void valueChanged(Number minValue, Number maxValue) {
-        presenter.seekbarvaluechanged(minValue, maxValue);
+        presenter.seekbarvaluechanged(minValue, maxValue, mAct.getVidSource());
+    }
+
+    //@Override
+    public void setTextTime(String start, String end) {
+        tvprog.setText(start);
+        tvstart.setText(start);
+        tvend.setText(end);
     }
 
     public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
+        void videoModified(VideoSource e);
     }
 }

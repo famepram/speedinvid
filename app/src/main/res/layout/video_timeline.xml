@@ -15,9 +15,11 @@
         android:layout_height="wrap_content"/>
     <LinearLayout
         android:id="@+id/range_overlay"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
         android:layout_width="match_parent"
         android:layout_alignParentTop="true"
-        android:layout_height="44dp"
+        android:layout_height="60dp"
         android:orientation="horizontal"
         android:weightSum="100">
         <RelativeLayout
@@ -30,7 +32,7 @@
             android:id="@+id/rl_center_space"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="0"></RelativeLayout>
+            android:layout_weight="100"></RelativeLayout>
         <RelativeLayout
             android:id="@+id/rl_right_space"
             android:layout_width="0dp"
@@ -40,7 +42,7 @@
     </LinearLayout>
     <com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar
         android:layout_below="@+id/range_overlay"
-        android:layout_marginTop="-10dp"
+        android:layout_marginTop="10dp"
         android:id="@+id/rangeSeekbar"
         app:left_thumb_image="@drawable/caret_s"
         app:right_thumb_image="@drawable/caret_s"
@@ -49,6 +51,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
     <TextView
+        android:layout_marginLeft="12dp"
         android:layout_marginTop="-8dp"
         android:id="@+id/tv_vidstart"
         android:layout_below="@+id/rangeSeekbar"
@@ -60,8 +63,8 @@
         android:layout_height="wrap_content" />
 
     <TextView
-        android:layout_marginTop="-8dp"
         android:id="@+id/tv_vidprogress"
+        android:layout_marginTop="-8dp"
         android:layout_below="@+id/rangeSeekbar"
         android:layout_width="wrap_content"
         android:layout_centerHorizontal="true"
@@ -71,6 +74,7 @@
         android:layout_height="wrap_content" />
 
     <TextView
+        android:layout_marginRight="12dp"
         android:layout_marginTop="-8dp"
         android:id="@+id/tv_vidend"
         android:layout_below="@+id/rangeSeekbar"

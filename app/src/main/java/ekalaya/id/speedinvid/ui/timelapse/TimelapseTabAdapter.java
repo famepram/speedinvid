@@ -32,9 +32,6 @@ public class TimelapseTabAdapter  extends FragmentStatePagerAdapter {
         switch (position) {
             case 0:
                 FragmentTimelapseTrim tabTrim = new FragmentTimelapseTrim();
-                Bundle args = new Bundle();
-                args.putString("videouri", videoUri);
-                tabTrim.setArguments(args);
                 return tabTrim;
             case 1:
                 FragmentTimelapseSpeed tabSpeed = new FragmentTimelapseSpeed();

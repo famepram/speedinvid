@@ -52,7 +52,6 @@ import ekalaya.id.speedinvid.util.VideoProcessor;
 
 public class TimelapseActivity extends AppCompatActivity
                             implements TimelapseContract.View,
-                                       OnRangeSeekbarChangeListener,
                                        MediaPlayer.OnPreparedListener,
                                        View.OnClickListener,VideoView.OnTouchListener,
                                         FragmentTimelapseTrim.OnFragmentInteractionListener,
@@ -69,19 +68,7 @@ public class TimelapseActivity extends AppCompatActivity
 
     VideoView mVideoView;
 
-    RecyclerView mRecycleView;
-
-    TimelineVideoAdapter mAdapter;
-
-    CrystalRangeSeekbar mSeekbar;
-
-    Spinner spinnerSpeed, spinnerQuality;
-
-    RelativeLayout rlLeft, rlCenter, rlRight, rlPauseOverlay;
-
-    LinearLayout.LayoutParams pl, pc, pr;
-
-    TextView tvstart, tvend, tvprog;
+    RelativeLayout rlPauseOverlay;
 
     Button btnProcess;
 
@@ -112,10 +99,8 @@ public class TimelapseActivity extends AppCompatActivity
                 .appComponent(App.get(this).getComponent()).build();
         actvComponent.inject(this);
         initIntent();
-        initTab();
-        //initUI();
+        initUI();
 
-//        loadVP();
     }
 
     public TimelapseComponent getActvComponent(){
@@ -172,67 +157,38 @@ public class TimelapseActivity extends AppCompatActivity
         window.setStatusBarColor(ContextCompat.getColor(this,R.color.colorGreyDark));
     }
 
+    public VideoSource getVidSource(){
+        return videoSource;
+    }
+
     private void initUI(){
-//        mVideoView      = (VideoView) findViewById(R.id.vv_editor);
-//
-//        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
-//        mLayoutManager.setOrientation(LinearLayout.HORIZONTAL);
-//        mRecycleView    = (RecyclerView) findViewById(R.id.my_recycler_view);
-//        mRecycleView.setLayoutManager(mLayoutManager);
-//        mAdapter        = new TimelineVideoAdapter(null,getApplicationContext());
-//        mRecycleView.setAdapter(mAdapter);
-//
-//        rlPauseOverlay = (RelativeLayout) findViewById(R.id.pause_overlay);
-//        rlPauseOverlay.setOnClickListener(this);
-//
-//        rlLeft      = (RelativeLayout) findViewById(R.id.rl_left_space);
-//        rlCenter    = (RelativeLayout) findViewById(R.id.rl_center_space);
-//        rlRight     = (RelativeLayout) findViewById(R.id.rl_right_space);
-//        mSeekbar    = (CrystalRangeSeekbar) findViewById(R.id.rangeSeekbar);
-//
+        mVideoView      = (VideoView) findViewById(R.id.vv_editor);
+        presenter.initializinVidSrc(videoPath);
 //        btnProcess  = (Button) findViewById(R.id.btn_next);
 //        btnProcess.setOnClickListener(this);
-//
-//        spinnerSpeed    = (Spinner) findViewById(R.id.spinner_speed);
-//        ArrayAdapter<CharSequence> adapterSpeed = ArrayAdapter.createFromResource(this,
-//                R.array.speed_array, android.R.layout.simple_spinner_item);
-//        spinnerSpeed.setAdapter(adapterSpeed);
-//
-//        spinnerQuality  = (Spinner) findViewById(R.id.spinner_quality);
-//        ArrayAdapter<CharSequence> adapterQty = ArrayAdapter.createFromResource(this,
-//                R.array.quality_array, android.R.layout.simple_spinner_item);
-//        spinnerQuality.setAdapter(adapterQty);
-//
-//        pl = (LinearLayout.LayoutParams) rlLeft.getLayoutParams();
-//        pc = (LinearLayout.LayoutParams) rlCenter.getLayoutParams();
-//        pr = (LinearLayout.LayoutParams) rlRight.getLayoutParams();
-//
-//        tvstart = (TextView) findViewById(R.id.tv_vidstart);
-//        tvend   = (TextView) findViewById(R.id.tv_vidend);
-//        tvprog  = (TextView) findViewById(R.id.tv_vidprogress);
-//
-//        progressDialog = new ProgressDialog(this);
-//        progressDialog.setTitle(null);
-//        progressDialog.setCancelable(false);
-//
-//        r = new Runnable(){
-//            @Override
-//            public void run() {
-//                int cur_pos = mVideoView.getCurrentPosition();
-//                tvprog.setText(Helper.formatTime(cur_pos));
-//                if(Math.ceil(cur_pos/500) >= (Math.ceil(videoSource.getFinish()/500) )){
-//                    mVideoView.seekTo(videoSource.getStart());
-//                }
-//                handler.postDelayed(r,200);
-//            }
-//        };
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle(null);
+        progressDialog.setCancelable(false);
+
+        r = new Runnable(){
+            @Override
+            public void run() {
+                int cur_pos = mVideoView.getCurrentPosition();
+                //tvprog.setText(Helper.formatTime(cur_pos));
+                if(Math.ceil(cur_pos/500) >= (Math.ceil(videoSource.getFinish()/500) )){
+                    mVideoView.seekTo(videoSource.getStart());
+                }
+                handler.postDelayed(r,200);
+            }
+        };
     }
 
     private void initIntent(){
         Bundle bundle = getIntent().getExtras();
 //        videoPath   = bundle.getString(Const.INTENT_KEY_FILEPATH);
         videoPath   = "/storage/emulated/0/DCIM/Camera/V_20170826_234919_LL.mp4";
-        //presenter.initializinVidSrc(videoPath);
+
     }
 
     private void processTimeLapse(){
@@ -240,58 +196,27 @@ public class TimelapseActivity extends AppCompatActivity
         mVP.execute();
     }
 
-    @Override
-    public void frameGenerated(List<Bitmap> e) {
-        mAdapter.setFiles(e);
-        mSeekbar.setMinValue(0);
-        mSeekbar.setMaxValue(videoSource.getDuration());
-        mSeekbar.setOnRangeSeekbarChangeListener(this);
-        mVideoView.setOnTouchListener(this);
-    }
 
-    @Override
-    public void setTimelineOverlay(int ml, int mr, int cw) {
-        pl = pl == null ? (LinearLayout.LayoutParams) rlLeft.getLayoutParams() : pl;
-        pc = pc == null ? (LinearLayout.LayoutParams) rlCenter.getLayoutParams() : pc;
-        pr = pr == null ? (LinearLayout.LayoutParams) rlRight.getLayoutParams() : pr;
-
-        pl.weight = ml;
-        pc.weight = cw;
-        pr.weight = mr;
-
-        rlLeft.setLayoutParams(pl);
-        rlCenter.setLayoutParams(pc);
-        rlRight.setLayoutParams(pr);
-    }
-
-    @Override
-    public void setTextTime(String start, String end) {
-        tvprog.setText(start);
-        tvstart.setText(start);
-        tvend.setText(end);
-    }
 
     @Override
     public void videoInitialized(VideoSource vs) {
         videoSource = vs;
         mVideoView.setVideoURI(Uri.parse(videoSource.getPathsrc()));
         mVideoView.setOnPreparedListener(this);
-        presenter.generateFrames(videoPath);
     }
 
     @Override
     public void videoModified(VideoSource vs) {
         videoSource = vs;
-        setTextTime(vs.getFormattedStart(),vs.getFormattedFinish());
-        setTimelineOverlay(vs.getPercentStartCut(), vs.getPercentFinishCut(), vs.getPercentTrimmed());
         mVideoView.seekTo(vs.getStart());
     }
 
     @Override
-    public void valueChanged(Number minValue, Number maxValue) {
-        presenter.adjustToSeekbar(minValue, maxValue, videoSource);
-
+    public void overlayLoaderShow() {
+        initTab();
+        loadVP();
     }
+
 
     @Override
     public void onPause(){

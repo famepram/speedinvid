@@ -61,19 +61,19 @@ public class TimelineVideoAdapter extends RecyclerView.Adapter<TimelineVideoAdap
         public TimelineVideoAdapterrHolder(View itemView) {
             super(itemView);
             DisplayMetrics displayMetrics = ctx.getResources().getDisplayMetrics();
-            float dpHeight = displayMetrics.heightPixels / displayMetrics.density;
-            float dpWidth = displayMetrics.widthPixels - (24 * displayMetrics.density * 2);
-            float perImg  = dpWidth / 8;
-            float hpad    =  displayMetrics.heightPixels / displayMetrics.widthPixels * perImg;
+            float dpHeight  = displayMetrics.heightPixels / displayMetrics.density;
+            float dpWidth   = displayMetrics.widthPixels - (24 * displayMetrics.density * 2);
+            float perImg    = dpWidth / 8;
+            float hpad      = perImg / displayMetrics.widthPixels * displayMetrics.heightPixels;
 
 
 
             img = (ImageView) itemView.findViewById(R.id.iv_rv_item);
             rlPad = (RelativeLayout) itemView.findViewById(R.id.rl_rv_pad);
-            rlPad.getLayoutParams().height = (int) hpad;
-            rlPad.getLayoutParams().width = (int) perImg;
+            rlPad.getLayoutParams().height  = (int) (hpad);
+//            rlPad.getLayoutParams().width   = (int) perImg;
 
-            img.getLayoutParams().height =  (int)perImg;
+//            img.getLayoutParams().height =  (int)perImg;
             img.getLayoutParams().width =  (int)perImg;
 //            img.setScaleType(ImageView.ScaleType.CENTER_CROP);
 //            img.getLayoutParams().height = 210;

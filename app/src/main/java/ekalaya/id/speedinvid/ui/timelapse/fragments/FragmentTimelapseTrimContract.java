@@ -12,7 +12,7 @@ public class FragmentTimelapseTrimContract {
     interface View {
         void timelineDrawn(List<Bitmap> e);
 
-        void overlaySeekbarchange(int ml, int mr, int cw);00
+        void overlaySeekbarchange(int ml, int mr, int cw);
 
     }
 

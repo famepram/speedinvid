@@ -29,19 +29,17 @@ public class FragmentTimelapseTrimPresenter extends BasePresenter<FragmentTimela
     @Override
     public void drawTimeline(String abspath) {
         Bitmap bmp = null;
-        Log.d(Const.APP_TAG, "abspath : " + abspath);
         MediaMetadataRetriever retriever = new  MediaMetadataRetriever();
         try {
             retriever.setDataSource(abspath);
             bmp = retriever.getFrameAtTime();
             String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
             Long dur    = Long.parseLong(time );
-            Log.d("SPEEDINVID", "Dur : "+dur);
             List<Bitmap> bmps = new ArrayList<Bitmap>();
             if(dur > 0){
                 int frametime;
                 for(int i=0; i < 8; i++){
-                    frametime = i > 0 ? (int) Math.ceil(dur / 8) * i + 1:1;
+                    frametime = i > 0 ? (int) Math.ceil(dur / 8) * (i + 1):1;
                     frametime = frametime * 1000;
                     Bitmap bmFrame = retriever.getFrameAtTime(frametime, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
                     bmps.add(bmFrame);
@@ -51,7 +49,11 @@ public class FragmentTimelapseTrimPresenter extends BasePresenter<FragmentTimela
             view.timelineDrawn(bmps);
         } catch (Exception e){
             e.printStackTrace();
-            //og.e(Const.APP_TAG, "Exception : " + e.getMessage());
         }
+    }
+
+    @Override
+    public void seekbarvaluechanged(Number min, Number max) {
+
     }
 }

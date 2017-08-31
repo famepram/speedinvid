@@ -3,9 +3,16 @@
     android:orientation="vertical" android:layout_width="wrap_content"
     android:background="#000000"
     android:layout_height="wrap_content">
-    <ImageView
-        android:id="@+id/iv_rv_item"
-        android:scaleType="centerCrop"
+    <RelativeLayout
+        android:id="@+id/rl_rv_pad"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:background="#000000">
+        <ImageView
+            android:id="@+id/iv_rv_item"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
 </RelativeLayout>

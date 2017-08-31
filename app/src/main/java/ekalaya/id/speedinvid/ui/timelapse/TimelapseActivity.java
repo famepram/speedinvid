@@ -87,6 +87,12 @@ public class TimelapseActivity extends AppCompatActivity
 
     private VideoProcessor mVP;
 
+    public interface videoRuntime {
+        void setTextprogress(String time);
+    }
+
+    videoRuntime mVideoRuntime;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -164,8 +170,8 @@ public class TimelapseActivity extends AppCompatActivity
     private void initUI(){
         mVideoView      = (VideoView) findViewById(R.id.vv_editor);
         presenter.initializinVidSrc(videoPath);
-//        btnProcess  = (Button) findViewById(R.id.btn_next);
-//        btnProcess.setOnClickListener(this);
+        btnProcess  = (Button) findViewById(R.id.btn_next);
+        btnProcess.setOnClickListener(this);
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setTitle(null);
@@ -175,13 +181,20 @@ public class TimelapseActivity extends AppCompatActivity
             @Override
             public void run() {
                 int cur_pos = mVideoView.getCurrentPosition();
-                //tvprog.setText(Helper.formatTime(cur_pos));
+                setTextProgress(Helper.formatTime(cur_pos));
                 if(Math.ceil(cur_pos/500) >= (Math.ceil(videoSource.getFinish()/500) )){
                     mVideoView.seekTo(videoSource.getStart());
                 }
                 handler.postDelayed(r,200);
             }
         };
+    }
+
+    private void setTextProgress(String time){
+        FragmentTimelapseTrim fTrim = (FragmentTimelapseTrim) tabAdapter.getItem(0);
+        if(fTrim != null){
+            fTrim.setTextProgress(time);
+        }
     }
 
     private void initIntent(){
@@ -337,10 +350,5 @@ Video Processor Callback
     @Override
     public void onExecStart() {
         Log.d(Const.APP_TAG, "Video Processor Callback - onExecStart ");
-    }
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
     }
 }

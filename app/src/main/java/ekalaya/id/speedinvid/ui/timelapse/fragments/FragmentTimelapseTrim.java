@@ -165,6 +165,10 @@ public class FragmentTimelapseTrim extends Fragment
         tvend.setText(end);
     }
 
+    public void setTextProgress(String time) {
+        tvprog.setText(time);
+    }
+
     public interface OnFragmentInteractionListener {
         void videoModified(VideoSource e);
     }

@@ -64,7 +64,7 @@ public class TimelineVideoAdapter extends RecyclerView.Adapter<TimelineVideoAdap
             float perImg  = dpWidth / 8;
             float hpad    =  dpWidth / 1080 * 1920;
 
-            
+
 
             img = (ImageView) itemView.findViewById(R.id.iv_rv_item);
             img.getLayoutParams().width =  (int)perImg;

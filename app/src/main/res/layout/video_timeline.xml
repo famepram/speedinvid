@@ -19,8 +19,6 @@
         android:layout_alignParentTop="true"
         android:layout_height="44dp"
         android:orientation="horizontal"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
         android:weightSum="100">
         <RelativeLayout
             android:id="@+id/rl_left_space"
@@ -51,30 +49,34 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
     <TextView
-        android:layout_marginLeft="8dp"
+        android:layout_marginTop="-8dp"
         android:id="@+id/tv_vidstart"
         android:layout_below="@+id/rangeSeekbar"
         android:layout_width="wrap_content"
         android:layout_alignParentLeft="true"
+        android:textColor="@color/colorGreyText"
         android:textSize="10sp"
         android:text="00:00"
         android:layout_height="wrap_content" />
 
     <TextView
+        android:layout_marginTop="-8dp"
         android:id="@+id/tv_vidprogress"
         android:layout_below="@+id/rangeSeekbar"
         android:layout_width="wrap_content"
         android:layout_centerHorizontal="true"
+        android:textColor="@color/colorGreyText"
         android:textSize="10sp"
         android:text="00:00"
         android:layout_height="wrap_content" />
 
     <TextView
+        android:layout_marginTop="-8dp"
         android:id="@+id/tv_vidend"
-        android:layout_marginRight="8dp"
         android:layout_below="@+id/rangeSeekbar"
         android:layout_width="wrap_content"
         android:layout_alignParentRight="true"
+        android:textColor="@color/colorGreyText"
         android:textSize="10sp"
         android:text="00:00"
         android:layout_height="wrap_content" />

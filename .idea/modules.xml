@@ -4,8 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Speedinvid.iml" filepath="$PROJECT_DIR$/Speedinvid.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/speedinvid.iml" filepath="$PROJECT_DIR$/speedinvid.iml" />
     </modules>
   </component>
 </project>

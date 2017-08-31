@@ -11,7 +11,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
+import com.crystal.crystalrangeseekbar.interfaces.OnRangeSeekbarChangeListener;
 import com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar;
 
 import java.util.List;
@@ -20,10 +23,14 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import ekalaya.id.speedinvid.R;
+import ekalaya.id.speedinvid.data.models.VideoSource;
 import ekalaya.id.speedinvid.ui.timelapse.TimelapseActivity;
 import ekalaya.id.speedinvid.ui.timelapse.TimelineVideoAdapter;
 
-public class FragmentTimelapseTrim extends Fragment implements FragmentTimelapseTrimContract.View {
+public class FragmentTimelapseTrim extends Fragment
+                                implements FragmentTimelapseTrimContract.View,
+                                            OnRangeSeekbarChangeListener{
+
     private static final String ARG_PARAM1 = "videouri";
 
     private String videoURI;
@@ -38,7 +45,13 @@ public class FragmentTimelapseTrim extends Fragment implements FragmentTimelapse
 
     CrystalRangeSeekbar mSeekbar;
 
+    TextView tvstart, tvend, tvprog;
 
+    RelativeLayout rlLeft, rlCenter, rlRight;
+
+    LinearLayout.LayoutParams pl, pc, pr;
+
+    VideoSource vidsrc;
 
     @Inject
     @Named("AppContext")
@@ -91,6 +104,14 @@ public class FragmentTimelapseTrim extends Fragment implements FragmentTimelapse
 
         mAdapter        = new TimelineVideoAdapter(null,context);
         mRecycleView.setAdapter(mAdapter);
+
+        rlLeft      = (RelativeLayout) v.findViewById(R.id.rl_left_space);
+        rlCenter    = (RelativeLayout) v.findViewById(R.id.rl_center_space);
+        rlRight     = (RelativeLayout) v.findViewById(R.id.rl_right_space);
+        mSeekbar    = (CrystalRangeSeekbar) v.findViewById(R.id.rangeSeekbar);
+        tvstart     = (TextView) v.findViewById(R.id.tv_vidstart);
+        tvend       = (TextView) v.findViewById(R.id.tv_vidend);
+        tvprog      = (TextView) v.findViewById(R.id.tv_vidprogress);
     }
 
     public void onButtonPressed(Uri uri) {
@@ -119,6 +140,11 @@ public class FragmentTimelapseTrim extends Fragment implements FragmentTimelapse
     @Override
     public void timelineDrawn(List<Bitmap> e) {
         mAdapter.setFiles(e);
+    }
+
+    @Override
+    public void valueChanged(Number minValue, Number maxValue) {
+        presenter.seekbarvaluechanged(minValue, maxValue);
     }
 
     public interface OnFragmentInteractionListener {

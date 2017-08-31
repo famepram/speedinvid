@@ -34,7 +34,6 @@ public class TimelapsePresenter extends BasePresenter<TimelapseContract.View> im
 
     @Override
     public void initializinVidSrc(String abspath) {
-        //Log.d(Const.APP_TAG,"abspath-------------------"+abspath);
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         try {
             Uri uri = Uri.parse(abspath);
@@ -49,13 +48,39 @@ public class TimelapsePresenter extends BasePresenter<TimelapseContract.View> im
             vs.setWidth(width);
             vs.setStart(0);
             vs.setFinish(dur);
-            view.videoInitialized(vs);
+            List<Bitmap> e = sliceFrame(abspath);
+            view.videoInitialized(vs,e);
             view.videoModified(vs);
-
+            view.overlayLoaderShow();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             retriever.release();
         }
+    }
+
+
+    public List<Bitmap> sliceFrame(String abspath) {
+        List<Bitmap> bmps = new ArrayList<Bitmap>();
+        MediaMetadataRetriever retriever = new  MediaMetadataRetriever();
+        try {
+            retriever.setDataSource(abspath);
+            String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+            Long dur    = Long.parseLong(time );
+
+            if(dur > 0){
+                int frametime;
+                for(int i=0; i < 8; i++){
+                    frametime = i > 0 ? (int) Math.ceil(dur / 8) * (i + 1):1;
+                    frametime = frametime * 1000;
+                    Bitmap bmFrame = retriever.getFrameAtTime(frametime, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
+                    bmps.add(bmFrame);
+                }
+            }
+            retriever.release();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return bmps;
     }
 }

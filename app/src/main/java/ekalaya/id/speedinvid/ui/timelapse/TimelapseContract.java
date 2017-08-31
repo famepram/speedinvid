@@ -12,17 +12,14 @@ import ekalaya.id.speedinvid.data.models.VideoSource;
 public class TimelapseContract {
 
     interface View {
-        void videoInitialized(VideoSource videoSource);
+        void videoInitialized(VideoSource videoSource, List<Bitmap> e);
 
         void videoModified(VideoSource vs);
 
-        void overlayLoaderShow();
     }
 
     interface Presenter {
 
         void initializinVidSrc(String abspath);
-
-        void showOverlayLoader();
     }
 }

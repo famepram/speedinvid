@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
@@ -34,6 +35,7 @@ import com.crystal.crystalrangeseekbar.interfaces.OnRangeSeekbarChangeListener;
 import com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -68,7 +70,7 @@ public class TimelapseActivity extends AppCompatActivity
 
     VideoView mVideoView;
 
-    RelativeLayout rlPauseOverlay;
+    RelativeLayout rlPauseOverlay, loadingOverlay;
 
     Button btnProcess;
 
@@ -82,16 +84,14 @@ public class TimelapseActivity extends AppCompatActivity
 
     VideoSource videoSource;
 
+    List<Bitmap> frames = new ArrayList<Bitmap>();
+
+    TextView tvProg;
+
     private Runnable r;
     final Handler handler = new Handler();
 
     private VideoProcessor mVP;
-
-    public interface videoRuntime {
-        void setTextprogress(String time);
-    }
-
-    videoRuntime mVideoRuntime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,6 +125,7 @@ public class TimelapseActivity extends AppCompatActivity
 
         viewPager.setAdapter(tabAdapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        viewPager.setOffscreenPageLimit(2);
         viewPager.setOnTouchListener(new View.OnTouchListener(){
             @Override
             public boolean onTouch(View v, MotionEvent event){
@@ -167,9 +168,13 @@ public class TimelapseActivity extends AppCompatActivity
         return videoSource;
     }
 
+    public List<Bitmap> getVidFrames(){
+        return frames;
+    }
+
     private void initUI(){
         mVideoView      = (VideoView) findViewById(R.id.vv_editor);
-        presenter.initializinVidSrc(videoPath);
+
         btnProcess  = (Button) findViewById(R.id.btn_next);
         btnProcess.setOnClickListener(this);
 
@@ -177,24 +182,30 @@ public class TimelapseActivity extends AppCompatActivity
         progressDialog.setTitle(null);
         progressDialog.setCancelable(false);
 
-        r = new Runnable(){
+        rlPauseOverlay = (RelativeLayout) findViewById(R.id.pause_overlay);
+        rlPauseOverlay.setOnClickListener(this);
+        loadingOverlay = (RelativeLayout) findViewById(R.id.loading_overlay);
+
+        new CountDownTimer(1000, 1000) {
+            public void onTick(long mills) {}
+
             @Override
-            public void run() {
-                int cur_pos = mVideoView.getCurrentPosition();
-                setTextProgress(Helper.formatTime(cur_pos));
-                if(Math.ceil(cur_pos/500) >= (Math.ceil(videoSource.getFinish()/500) )){
-                    mVideoView.seekTo(videoSource.getStart());
-                }
-                handler.postDelayed(r,200);
+            public void onFinish() {
+                presenter.initializinVidSrc(videoPath);
             }
-        };
+        }.start();
+
+
     }
 
-    private void setTextProgress(String time){
-        FragmentTimelapseTrim fTrim = (FragmentTimelapseTrim) tabAdapter.getItem(0);
-        if(fTrim != null){
-            fTrim.setTextProgress(time);
+    private void setVideoProgress(String time){
+        if(tabAdapter != null){
+            FragmentTimelapseTrim fTrim = (FragmentTimelapseTrim) tabAdapter.getItem(0);
+            if(fTrim != null){
+                tvProg.setText(time);
+            }
         }
+
     }
 
     private void initIntent(){
@@ -212,22 +223,38 @@ public class TimelapseActivity extends AppCompatActivity
 
 
     @Override
-    public void videoInitialized(VideoSource vs) {
+    public void videoInitialized(VideoSource vs, List<Bitmap> e) {
         videoSource = vs;
         mVideoView.setVideoURI(Uri.parse(videoSource.getPathsrc()));
-        mVideoView.setOnPreparedListener(this);
+        frames = e;
+        initTab();
+        loadVP();
     }
 
     @Override
     public void videoModified(VideoSource vs) {
         videoSource = vs;
         mVideoView.seekTo(vs.getStart());
+
     }
 
     @Override
-    public void overlayLoaderShow() {
-        initTab();
-        loadVP();
+    public void fragmentBuildingDone(TextView tv) {
+        tvProg = tv;
+        mVideoView.setOnPreparedListener(this);
+        mVideoView.setOnTouchListener(this);
+        loadingOverlay.setVisibility(View.GONE);
+
+    }
+
+    @Override
+    public void FSVidSourceModified(VideoSource vs) {
+        videoSource = vs;
+    }
+
+    @Override
+    public void FQVidSourceModified(VideoSource vs) {
+        videoSource = vs;
     }
 
 
@@ -247,7 +274,18 @@ public class TimelapseActivity extends AppCompatActivity
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
         mediaPlayer.setLooping(true);
-        handler.postDelayed(r,200);
+        handler.postDelayed(r = new Runnable(){
+            @Override
+            public void run() {
+                int cur_pos = mVideoView.getCurrentPosition();
+                setVideoProgress(Helper.formatTime(cur_pos));
+                if(Math.ceil(cur_pos/500) >= (Math.ceil(videoSource.getFinish()/500) )){
+                    mVideoView.seekTo(videoSource.getStart());
+                }
+                handler.postDelayed(r,200);
+            }
+        },200);
+        handler.removeCallbacks(r);
     }
 
     private void resumingVideo(){
@@ -351,4 +389,7 @@ Video Processor Callback
     public void onExecStart() {
         Log.d(Const.APP_TAG, "Video Processor Callback - onExecStart ");
     }
+
+
+
 }

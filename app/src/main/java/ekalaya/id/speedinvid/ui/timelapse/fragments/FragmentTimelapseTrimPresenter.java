@@ -28,32 +28,6 @@ public class FragmentTimelapseTrimPresenter extends BasePresenter<FragmentTimela
     }
 
     @Override
-    public void drawTimeline(String abspath) {
-        Bitmap bmp = null;
-        MediaMetadataRetriever retriever = new  MediaMetadataRetriever();
-        try {
-            retriever.setDataSource(abspath);
-            bmp = retriever.getFrameAtTime();
-            String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-            Long dur    = Long.parseLong(time );
-            List<Bitmap> bmps = new ArrayList<Bitmap>();
-            if(dur > 0){
-                int frametime;
-                for(int i=0; i < 8; i++){
-                    frametime = i > 0 ? (int) Math.ceil(dur / 8) * (i + 1):1;
-                    frametime = frametime * 1000;
-                    Bitmap bmFrame = retriever.getFrameAtTime(frametime, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
-                    bmps.add(bmFrame);
-                }
-            }
-            retriever.release();
-            view.timelineDrawn(bmps);
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    @Override
     public void seekbarvaluechanged(Number min, Number max, VideoSource vs) {
         int start = Integer.parseInt(String.valueOf(min));
         int end   = Integer.parseInt(String.valueOf(max));

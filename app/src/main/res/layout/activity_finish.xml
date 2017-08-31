@@ -1,25 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="ekalaya.id.speedinvid.ui.finish.FinishActivity">
-    <VideoView
-        android:id="@+id/vv_finish"
+    tools:context="ekalaya.id.speedinvid.ui.editor.EditorActivity">
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:layout_weight="2"/>
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-        <Button
-            android:id="@+id/btn_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Create Another Timelapse"/>
-    </RelativeLayout>
-</LinearLayout>
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="10"
+        android:background="@drawable/grd_tl">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="#000000"
+            android:layout_weight="5">
+            <VideoView
+                android:id="@+id/vv_editor"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"/>
+            <RelativeLayout
+                android:id="@+id/pause_overlay"
+                android:background="#80000000"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <ImageView
+                    android:layout_centerInParent="true"
+                    android:background="@mipmap/ic_play"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </RelativeLayout>
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_weight="5"
+            android:layout_width="match_parent"
+            android:padding="25dp"
+            android:layout_height="0dp">
+            <Button
+                android:layout_marginTop="20dp"
+                android:id="@+id/btn_opengallery"
+                android:background="@drawable/bg_circle_outlined"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:layout_centerHorizontal="true"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textSize="14dp"
+                android:text="Open in Gallery"/>
+            <Button
+                android:layout_below="@+id/btn_opengallery"
+                android:layout_marginTop="20dp"
+                android:id="@+id/btn_backhome"
+                android:background="@android:color/transparent"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:layout_centerHorizontal="true"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textSize="14dp"
+                android:text="Create Another Video"/>
+        </RelativeLayout>
+    </LinearLayout>
+</RelativeLayout>

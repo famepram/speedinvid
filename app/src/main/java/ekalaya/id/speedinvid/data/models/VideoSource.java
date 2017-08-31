@@ -31,6 +31,12 @@ public class VideoSource {
 
     private int finish;
 
+    private double speed;
+
+    private int quality;
+
+    private boolean keepPotrait;
+
     public VideoSource(){}
 
     public VideoSource(String pathsrc) {
@@ -146,5 +152,29 @@ public class VideoSource {
     public int getPercentTrimmed(){
         int result = 100 - (getPercentStartCut() + getPercentFinishCut());
         return result;
+    }
+
+    public double getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(double speed) {
+        this.speed = speed;
+    }
+
+    public int getQuality() {
+        return quality;
+    }
+
+    public void setQuality(int quality) {
+        this.quality = quality;
+    }
+
+    public boolean isKeepPotrait() {
+        return keepPotrait;
+    }
+
+    public void setKeepPotrait(boolean keepPotrait) {
+        this.keepPotrait = keepPotrait;
     }
 }

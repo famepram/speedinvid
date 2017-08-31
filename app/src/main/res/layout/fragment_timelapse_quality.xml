@@ -5,6 +5,7 @@
     tools:context="ekalaya.id.speedinvid.ui.timelapse.fragments.FragmentTimelapseQuality">
 
     <LinearLayout
+        android:layout_marginTop="32dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -15,29 +16,31 @@
                 android:layout_alignParentLeft="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 android:text="Result Quality"
                 android:textColor="@color/colorGreyText"/>
             <Spinner
+                android:id="@+id/spinner_qlty"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"></Spinner>
         </RelativeLayout>
         <RelativeLayout
+            android:layout_marginTop="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
                 android:layout_alignParentLeft="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 android:text="Keep result in potrait mode"
                 android:textColor="@color/colorGreyText"/>
             <Switch
                 android:id="@+id/switch1"
+                android:layout_alignParentRight="true"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Switch" />
+                android:layout_height="wrap_content" />
         </RelativeLayout>
     </LinearLayout>
 

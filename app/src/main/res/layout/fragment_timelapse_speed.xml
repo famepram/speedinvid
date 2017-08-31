@@ -9,22 +9,30 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:weightSum="2">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textColor="@color/colorWhite"
-            android:textSize="10sp"
+        <RelativeLayout
             android:layout_weight="1"
-            android:textAlignment="center"
-            android:text="Slower"/>
-        <TextView
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:textColor="@color/colorWhite"
+                android:textSize="10sp"
+                android:text="Slower"/>
+        </RelativeLayout>
+        <RelativeLayout
             android:layout_weight="1"
-            android:textSize="10sp"
-            android:textAlignment="center"
-            android:textColor="@color/colorWhite"
-            android:text="Faster"/>
+            android:layout_width="0dp"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:textColor="@color/colorWhite"
+                android:textSize="10sp"
+                android:text="Faster"/>
+        </RelativeLayout>
     </LinearLayout>
     <LinearLayout
         android:id="@+id/wrap_overlay"
@@ -52,8 +60,9 @@
     </LinearLayout>
 
     <SeekBar
-        android:layout_marginLeft="0dp"
-        android:layout_marginRight="0dp"
+        android:id="@+id/speed_seekbar"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
         android:paddingTop="10dp"
         android:layout_centerVertical="true"
         android:progressDrawable="@drawable/tl_progress"
@@ -76,6 +85,7 @@
             android:textSize="10sp"
             android:text="0.1x"/>
         <TextView
+            android:id="@+id/speed_vid"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/colorWhite"

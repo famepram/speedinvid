@@ -12,7 +12,7 @@ import ekalaya.id.speedinvid.data.models.VideoSource;
 
 public class FragmentTimelapseTrimContract {
     interface View {
-        void timelineDrawn(List<Bitmap> e);
+
 
         void overlaySeekbarchange(int ml, int mr, int cw);
 
@@ -20,10 +20,10 @@ public class FragmentTimelapseTrimContract {
 
         void setTextTime(String start, String end);
 
+
     }
 
     interface Presenter {
-        void drawTimeline(String abspath);
 
         void seekbarvaluechanged(Number min, Number max, VideoSource vs);
     }

@@ -46,7 +46,9 @@ public class FragmentTimelapseTrim extends Fragment
 
     CrystalRangeSeekbar mSeekbar;
 
-    TextView tvstart, tvend, tvprog;
+    TextView tvstart, tvend;
+
+    public TextView tvprog;
 
     RelativeLayout rlLeft, rlCenter, rlRight;
 
@@ -74,10 +76,11 @@ public class FragmentTimelapseTrim extends Fragment
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         presenter = new FragmentTimelapseTrimPresenter(this);
-        presenter.drawTimeline(mAct.getVidSource().getPathsrc());
+
     }
 
     private void initUI(View v){
+        presenter = new FragmentTimelapseTrimPresenter(this);
         mAct = (TimelapseActivity) getActivity();
         context = mAct.getApplicationContext();
 
@@ -101,6 +104,7 @@ public class FragmentTimelapseTrim extends Fragment
         tvstart     = (TextView) v.findViewById(R.id.tv_vidstart);
         tvend       = (TextView) v.findViewById(R.id.tv_vidend);
         tvprog      = (TextView) v.findViewById(R.id.tv_vidprogress);
+        drawVideoTimeline();
 
     }
 
@@ -122,17 +126,17 @@ public class FragmentTimelapseTrim extends Fragment
         mListener = null;
     }
 
-    @Override
-    public void timelineDrawn(List<Bitmap> e) {
-        mAdapter.setFiles(e);
+    private void drawVideoTimeline(){
+        VideoSource vs = mAct.getVidSource();
+        mAdapter.setFiles(mAct.getVidFrames());
         mSeekbar.setMinValue(0);
-        mSeekbar.setMaxValue(mAct.getVidSource().getDuration());
+        mSeekbar.setMaxValue(vs.getDuration());
         mSeekbar.setOnRangeSeekbarChangeListener(this);
+        mListener.fragmentBuildingDone(tvprog);
     }
 
     @Override
     public void overlaySeekbarchange(int ml, int mr, int cw) {
-        Log.d(Const.APP_TAG,"ml :"+ml+" mr : "+mr+" cw :"+cw);
         pl = pl == null ? (LinearLayout.LayoutParams) rlLeft.getLayoutParams() : pl;
         pc = pc == null ? (LinearLayout.LayoutParams) rlCenter.getLayoutParams() : pc;
         pr = pr == null ? (LinearLayout.LayoutParams) rlRight.getLayoutParams() : pr;
@@ -165,11 +169,20 @@ public class FragmentTimelapseTrim extends Fragment
         tvend.setText(end);
     }
 
+    public TextView getTVProgress(){
+        return tvprog;
+    }
+
     public void setTextProgress(String time) {
-        tvprog.setText(time);
+        if(tvprog != null){
+            tvprog.setText(time);
+        }
+
     }
 
     public interface OnFragmentInteractionListener {
         void videoModified(VideoSource e);
+
+        void fragmentBuildingDone(TextView v);
     }
 }

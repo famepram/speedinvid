@@ -193,13 +193,11 @@ public class VideoProcessor {
 
                 @Override
                 public void onProgress(String s) {
-                    Log.d(Const.APP_TAG, s);
                     String ss = s.replaceAll("\\s+","");
                     if(ss.contains("time=")){
 
                         String[] extracts = ss.split("=");
                         String e = String.valueOf(extracts[5]);
-                        Log.d(Const.APP_TAG, "progress "+e);
                         String[] extracts2 = e.split("\\.");
                         int pt = Helper.timeToInt(extracts2[0]) * 1000;
                         int pcn = (int) ((double) pt * 100 / (double) vidsource.getDuration()) ;

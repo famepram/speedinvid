@@ -210,9 +210,7 @@ public class TimelapseActivity extends AppCompatActivity
 
     private void initIntent(){
         Bundle bundle = getIntent().getExtras();
-//        videoPath   = bundle.getString(Const.INTENT_KEY_FILEPATH);
-        videoPath   = "/storage/emulated/0/DCIM/Camera/V_20170826_234919_LL.mp4";
-
+        videoPath   = bundle.getString(Const.INTENT_KEY_FILEPATH);
     }
 
     private void processTimeLapse(){

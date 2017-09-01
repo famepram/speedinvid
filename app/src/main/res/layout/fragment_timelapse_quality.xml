@@ -5,28 +5,13 @@
     tools:context="ekalaya.id.speedinvid.ui.timelapse.fragments.FragmentTimelapseQuality">
 
     <LinearLayout
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
         <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_alignParentLeft="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:text="Result Quality"
-                android:textColor="@color/colorGreyText"/>
-            <Spinner
-                android:id="@+id/spinner_qlty"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"></Spinner>
-        </RelativeLayout>
-        <RelativeLayout
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
@@ -41,6 +26,25 @@
                 android:layout_alignParentRight="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_alignParentLeft="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:text="Result Quality"
+                android:textColor="@color/colorGreyText"/>
+            <Spinner
+                android:id="@+id/spinner_qlty"
+                android:layout_width="wrap_content"
+                android:background="@android:color/transparent"
+                android:popupBackground="@android:color/transparent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"></Spinner>
         </RelativeLayout>
     </LinearLayout>
 

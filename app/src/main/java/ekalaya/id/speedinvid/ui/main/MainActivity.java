@@ -17,6 +17,7 @@ import javax.inject.Inject;
 import ekalaya.id.speedinvid.R;
 import ekalaya.id.speedinvid.application.App;
 import ekalaya.id.speedinvid.ui.editor.EditorActivity;
+import ekalaya.id.speedinvid.ui.timelapse.TimelapseActivity;
 import ekalaya.id.speedinvid.util.Const;
 
 public class MainActivity extends AppCompatActivity implements MainContract.View, View.OnClickListener{
@@ -86,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     @Override
     public void videoValid(String absPath) {
         Toast.makeText(getApplicationContext(), "Video path : "+absPath,Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(MainActivity.this, EditorActivity.class);
+        Intent intent = new Intent(MainActivity.this, TimelapseActivity.class);
         intent.putExtra(Const.INTENT_KEY_FILEPATH, absPath);
         startActivity(intent);
     }

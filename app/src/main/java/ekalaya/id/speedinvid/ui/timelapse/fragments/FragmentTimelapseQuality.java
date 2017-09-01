@@ -52,7 +52,7 @@ public class FragmentTimelapseQuality extends Fragment
         spinnerQuality.setOnItemSelectedListener(this);
 
         adapterQty = ArrayAdapter.createFromResource(mAct,
-                R.array.quality_array, android.R.layout.simple_spinner_item);
+                R.array.quality_array, R.layout.spinner_text);
         spinnerQuality.setAdapter(adapterQty);
 
         aSwitch = (Switch) v.findViewById(R.id.switch1);

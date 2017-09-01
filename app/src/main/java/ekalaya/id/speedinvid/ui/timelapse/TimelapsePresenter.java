@@ -51,7 +51,6 @@ public class TimelapsePresenter extends BasePresenter<TimelapseContract.View> im
             List<Bitmap> e = sliceFrame(abspath);
             view.videoInitialized(vs,e);
             view.videoModified(vs);
-            view.overlayLoaderShow();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

@@ -27,4 +27,14 @@ public class Helper {
         int duration = 3600 * hours + 60 * minutes + seconds;
         return duration;
     }
+
+    public static String ellipsis(final String text, int length){
+        String last;
+        if (text == null || text.length() < length) {
+            last = text;
+        } else {
+            last = "..."+text.substring(text.length() - length);
+        }
+        return last;
+    }
 }

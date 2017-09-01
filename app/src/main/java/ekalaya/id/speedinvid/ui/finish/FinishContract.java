@@ -6,6 +6,10 @@ package ekalaya.id.speedinvid.ui.finish;
 
 public class FinishContract {
 
-    interface View {}
-    interface Presenter{}
+    interface View {
+        void resultInitialized(String Duration);
+    }
+    interface Presenter{
+        void initResult(String uri);
+    }
 }

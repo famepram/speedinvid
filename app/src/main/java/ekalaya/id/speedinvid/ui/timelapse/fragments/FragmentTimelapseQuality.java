@@ -19,7 +19,6 @@ import ekalaya.id.speedinvid.ui.timelapse.TimelapseActivity;
 
 public class FragmentTimelapseQuality extends Fragment
                                     implements FragmentTimelapseQualityContract.View,
-                                                Spinner.OnItemSelectedListener,
                                                 CompoundButton.OnCheckedChangeListener{
 
 
@@ -27,11 +26,9 @@ public class FragmentTimelapseQuality extends Fragment
 
     FragmentTimelapseQualityPresenter presenter;
 
-    Spinner spinnerQuality;
 
-    Switch aSwitch;
+    Switch aSwitch, switchAudio;
 
-    ArrayAdapter<CharSequence> adapterQty;
 
     TimelapseActivity mAct;
 
@@ -43,20 +40,13 @@ public class FragmentTimelapseQuality extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_timelapse_quality, container, false);
-
         mAct = (TimelapseActivity) getActivity();
-
         presenter = new FragmentTimelapseQualityPresenter(this);
-
-        spinnerQuality = (Spinner)v.findViewById(R.id.spinner_qlty);
-        spinnerQuality.setOnItemSelectedListener(this);
-
-        adapterQty = ArrayAdapter.createFromResource(mAct,
-                R.array.quality_array, R.layout.spinner_text);
-        spinnerQuality.setAdapter(adapterQty);
-
-        aSwitch = (Switch) v.findViewById(R.id.switch1);
+        aSwitch     = (Switch) v.findViewById(R.id.switch1);
         aSwitch.setOnCheckedChangeListener(this);
+        switchAudio = (Switch) v.findViewById(R.id.switch2);
+        switchAudio.setOnCheckedChangeListener(this);
+        mListener.delegateFQltySwitchView(switchAudio);
         return v;
     }
 
@@ -79,26 +69,23 @@ public class FragmentTimelapseQuality extends Fragment
     }
 
     @Override
+    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+        int id = compoundButton.getId();
+        if(id == aSwitch.getId()){
+            presenter.changeOrientationMode(mAct.getVidSource(),b);
+        } else if(id == switchAudio.getId()){
+            presenter.changeRemovingAudio(mAct.getVidSource(),b);
+        }
+    }
+
+    @Override
     public void vidsourceModified(VideoSource vs) {
         mListener.FQVidSourceModified(vs);
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> adapterView) {
-
-    }
-
-    @Override
-    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-
-    }
-
     public interface OnFragmentInteractionListener {
         void FQVidSourceModified(VideoSource vs);
+
+        void delegateFQltySwitchView(Switch s);
     }
 }

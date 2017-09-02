@@ -27,4 +27,10 @@ public class FragmentTimelapseQualityPresenter extends BasePresenter<FragmentTim
         vs.setKeepPotrait(orientation);
         view.vidsourceModified(vs);
     }
+
+    @Override
+    public void changeRemovingAudio(VideoSource vs, Boolean remAudio) {
+        vs.setRemoveAudio(remAudio);
+        view.vidsourceModified(vs);
+    }
 }

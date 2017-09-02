@@ -27,6 +27,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.VideoView;
@@ -88,6 +89,8 @@ public class TimelapseActivity extends AppCompatActivity
 
     TextView tvProg;
 
+    Switch SwitchFqltyRemAudio;
+
     private Runnable r;
     final Handler handler = new Handler();
 
@@ -148,9 +151,9 @@ public class TimelapseActivity extends AppCompatActivity
     }
 
     private void loadVP(){
-        mVP = new VideoProcessor();
+        mVP = new VideoProcessor(getApplicationContext());
         mVP.setVideoProcessorCallback(this);
-        mVP.loadFFMEPEG(getApplicationContext());
+        mVP.loadFFMEPEG();
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -248,11 +251,23 @@ public class TimelapseActivity extends AppCompatActivity
     @Override
     public void FSVidSourceModified(VideoSource vs) {
         videoSource = vs;
+        if(vs.getSpeed() > 2 || vs.getSpeed() < 0.5){
+            vs.setRemoveAudio(true);
+            SwitchFqltyRemAudio.setChecked(true);
+            SwitchFqltyRemAudio.setEnabled(false);
+        } else {
+            SwitchFqltyRemAudio.setEnabled(true);
+        }
     }
 
     @Override
     public void FQVidSourceModified(VideoSource vs) {
         videoSource = vs;
+    }
+
+    @Override
+    public void delegateFQltySwitchView(Switch s) {
+        SwitchFqltyRemAudio = s;
     }
 
 

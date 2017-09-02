@@ -2,6 +2,7 @@ package ekalaya.id.speedinvid.util;
 
 import android.content.Context;
 import android.os.Environment;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 import com.github.hiteshsondhi88.libffmpeg.ExecuteBinaryResponseHandler;
@@ -13,7 +14,12 @@ import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegNotSupportedExceptio
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import ekalaya.id.speedinvid.data.models.VideoSource;
 
@@ -22,6 +28,10 @@ import ekalaya.id.speedinvid.data.models.VideoSource;
  */
 
 public class VideoProcessor {
+
+    @Named("AppContext")
+    @Inject
+    Context ctx;
 
     private VideoSource vidsource;
 
@@ -64,6 +74,11 @@ public class VideoProcessor {
         prepareResult();
     }
 
+    public VideoProcessor(Context ctx){
+        this.ctx = ctx;
+//        prepareResult();
+    }
+
     public void setVidsource(VideoSource vs){
         vidsource = vs;
         prepareResult();
@@ -88,7 +103,7 @@ public class VideoProcessor {
         this.mVPCallback = mVPCallback;
     }
 
-    public void loadFFMEPEG(Context ctx){
+    public void loadFFMEPEG(){
         try {
             if (ffmpeg == null) {
                 //Log.d(TAG, "ffmpeg : era nulo");
@@ -133,7 +148,7 @@ public class VideoProcessor {
         String[] complexCommand = {
                 "-i", vidsource.getPathsrc(),
                 "-vcodec","copy",
-                "-an",
+                "-acodec","copy",
                 "-ss", "" + ss,
                 "-to", "" + to,
                 tempResultPath};
@@ -151,17 +166,132 @@ public class VideoProcessor {
         }
     }
 
+    private String buildPad(){
+        int sh = getScreenHeight(); // screen height
+        int sw = getScreenWidth(); // screen width
+
+        double persori  = (double) sh / (double) sw;
+        double persvid  = vidsource.getHeight() / vidsource.getWidth();
+
+        int ph = 0;
+        int pw = 0;
+
+        int offsetX = 0;
+        int offsetY = 0;
+
+        if(persvid >= persori){
+            ph      = vidsource.getHeight();
+            pw      = vidsource.getHeight() * sw / sh ;
+            offsetX = (pw - vidsource.getWidth()) / 2;
+        } else {
+            pw = vidsource.getWidth();
+            ph = vidsource.getWidth() * sh / sw ;
+            offsetY = (ph - vidsource.getHeight()) / 2;
+        }
+        String padparam = "pad=width="+pw+":height="+ph+":x="+offsetX+":y="+offsetY+":color=black";
+        return padparam;
+    }
+
+    private boolean keepAudio(){
+        if(vidsource.getSpeed() > 2){
+            return false;
+        } else if(vidsource.getSpeed() < 0.5){
+            return false;
+        } else if(vidsource.isRemoveAudio()){
+            return false;
+        }
+        return true;
+    }
+
+    private double speedToSetPts(){
+        double retval;
+        double speed = vidsource.getSpeed();
+        if(speed < 1.0){
+            retval = 1 / speed;
+        } else {
+            retval = 100 / speed / 100;
+        }
+        retval = Math.ceil(retval * 10) /10;
+        Log.d(Const.APP_TAG,"retval : "+retval);
+//        DecimalFormat df = new DecimalFormat("#.#");
+//        String sRetval = df.format(retval);
+        return retval;
+    }
+
+    private String buildFilterComplex(){
+        String fcv = "setpts="+speedToSetPts()+"*PTS";
+        if(vidsource.isKeepPotrait()){
+            fcv+=","+buildPad();
+        }
+        //fcv = "[0:v]"+fcv+"[v];[0:a]atempo="+vidsource.getSpeed()+"[a]";
+        if(keepAudio()){
+            fcv = "[0:v]"+fcv+"[v];[0:a]atempo="+vidsource.getSpeed()+"[a]";
+//            fcv+="[0:a]atempo="+vidsource.getSpeed()+"[a]";
+        }
+        return fcv;
+    }
+
     private String[] buildArguments(){
         String vidsrc = cutFirst() ? tempResultPath : vidsource.getPathsrc();
+//        String setpts = setSpeed(vidsource.getSpeed());
+
+        String filterComplex = buildFilterComplex();
+        String fillterType = keepAudio() ? "-filter_complex":"-filter:v";
+
+        String bitrate = ((int) Math.ceil(vidsource.getBitrate()/1000))+"K";
+        Log.d(Const.APP_TAG," getBitrate : "+bitrate );
         String[] complexCommand = {
                 "-i", vidsrc,
-                "-filter:v","setpts=0.2*PTS",
+                fillterType,filterComplex,
                 "-vcodec","libx264",
+                "-pix_fmt","yuv420p",
+//                "-filter:v","setpts="+setpts+"*PTS",
+//                "-filter_complex","[0:v]setpts=0.5*PTS[v];[0:a]atempo=2.0[a]",
+//                "-vf","",
+//                "-vcodec","copy",
+//                "-q","1",
+//                "-crf","35",
+                "-b:v","1M",
+                "-minrate",bitrate,
+                "-maxrate",bitrate,
                 "-preset","ultrafast",
-                "-an",
-                videoFileResultPath};
+//                "-map", "[v]",
+//                "-map", "[a]",
+                "-safe", "0"};
+        if(keepAudio()){
+            complexCommand = append(complexCommand,"-map");
+            complexCommand = append(complexCommand,"[v]");
+
+            complexCommand = append(complexCommand,"-map");
+            complexCommand = append(complexCommand,"[a]");
+
+            complexCommand = append(complexCommand,"-b:a");
+            complexCommand = append(complexCommand,"128k");
+        } else {
+            complexCommand = append(complexCommand,"-an");
+        }
+
+//        if(!keepAudio()){
+//            Log.d(Const.APP_TAG," !keepAudio : false" );
+//            complexCommand = append(complexCommand,"-an");
+//        }
+        complexCommand = append(complexCommand,videoFileResultPath);
+
+//        Log.d(Const.APP_TAG," complexCommand : "+complexCommand.toString() );
+//                "-an",
+               // videoFileResultPath};
         return complexCommand;
     }
+
+//    private String setSpeed(double speed){
+//        String setpts = "";
+//        if(speed < 1){
+//            setpts = ((int) Math.ceil((1-speed)*10))+".0";
+//        } else {
+//            setpts = String.valueOf((100 / speed / 100));
+//        }
+//        return setpts;
+//    }
 
     public void execute(){
         if(cutFirst()){
@@ -193,14 +323,18 @@ public class VideoProcessor {
 
                 @Override
                 public void onProgress(String s) {
+                    Log.d(Const.APP_TAG, s);
                     String ss = s.replaceAll("\\s+","");
                     if(ss.contains("time=")){
 
                         String[] extracts = ss.split("=");
                         String e = String.valueOf(extracts[5]);
+
                         String[] extracts2 = e.split("\\.");
+
                         int pt = Helper.timeToInt(extracts2[0]) * 1000;
-                        int pcn = (int) ((double) pt * 100 / (double) vidsource.getDuration()) ;
+
+                        int pcn = (int) ((double) pt * 100 / (double) vidsource.getProcessDuration());
                         mVPCallback.onExecRunning(pcn, s);
                     }
                 }
@@ -236,6 +370,25 @@ public class VideoProcessor {
                 + String.format("%02d", remainMinute);
         result = "00:"+result;
         return result;
+    }
+
+    public int getScreenHeight(){
+        DisplayMetrics metrics = new DisplayMetrics();
+        int height= ctx.getResources().getDisplayMetrics().heightPixels;
+        return height;
+    }
+
+    public int getScreenWidth(){
+        DisplayMetrics metrics = new DisplayMetrics();
+        int height= ctx.getResources().getDisplayMetrics().widthPixels;
+        return height;
+    }
+
+    private static String[] append( String[] arr, String element) {
+        final int N = arr.length;
+        arr = Arrays.copyOf(arr, N + 1);
+        arr[N] = element;
+        return arr;
     }
 
 

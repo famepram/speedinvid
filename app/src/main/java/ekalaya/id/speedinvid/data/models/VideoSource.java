@@ -1,6 +1,7 @@
 package ekalaya.id.speedinvid.data.models;
 
 import android.net.Uri;
+import android.support.annotation.IntegerRes;
 import android.util.Log;
 
 import ekalaya.id.speedinvid.util.Helper;
@@ -31,11 +32,15 @@ public class VideoSource {
 
     private int finish;
 
-    private double speed;
+    private double speed = 1.0;
 
     private int quality;
 
+    private int bitrate;
+
     private boolean keepPotrait;
+
+    private boolean removeAudio;
 
     public VideoSource(){}
 
@@ -176,5 +181,28 @@ public class VideoSource {
 
     public void setKeepPotrait(boolean keepPotrait) {
         this.keepPotrait = keepPotrait;
+    }
+
+    public boolean isRemoveAudio() {
+        return removeAudio;
+    }
+
+    public void setRemoveAudio(boolean removeAudio) {
+        this.removeAudio = removeAudio;
+    }
+
+    public int getBitrate() {
+        return bitrate;
+    }
+
+    public void setBitrate(int bitrate) {
+        this.bitrate = bitrate;
+    }
+
+    public int getProcessDuration(){
+        int dur = getFinish() - getStart();
+        double time = dur / getSpeed();
+        time = time + ((int) Math.ceil(5 * time / 100));
+        return ((int) time);
     }
 }

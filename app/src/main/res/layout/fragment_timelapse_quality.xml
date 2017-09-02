@@ -36,15 +36,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
-                android:text="Result Quality"
+                android:text="Remove Audio"
                 android:textColor="@color/colorGreyText"/>
-            <Spinner
-                android:id="@+id/spinner_qlty"
+            <Switch
+                android:id="@+id/switch2"
+                android:layout_alignParentRight="true"
                 android:layout_width="wrap_content"
-                android:background="@android:color/transparent"
-                android:popupBackground="@android:color/transparent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"></Spinner>
+                android:layout_height="wrap_content" />
         </RelativeLayout>
     </LinearLayout>
 

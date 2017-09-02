@@ -38,14 +38,17 @@ public class TimelapsePresenter extends BasePresenter<TimelapseContract.View> im
         try {
             Uri uri = Uri.parse(abspath);
             retriever.setDataSource(ctx, uri);
-            int dur = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-            int height = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
-            int width = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+            int dur         = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+            int height      = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+            int width       = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+            int bitrate     = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE));
+
 
             VideoSource vs = new VideoSource(abspath);
             vs.setDuration(dur);
             vs.setHeight(height);
             vs.setWidth(width);
+            vs.setBitrate(bitrate);
             vs.setStart(0);
             vs.setFinish(dur);
             List<Bitmap> e = sliceFrame(abspath);

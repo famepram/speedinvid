@@ -86,10 +86,11 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
     @Override
     public void videoValid(String absPath) {
-        Toast.makeText(getApplicationContext(), "Video path : "+absPath,Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(), "Video path : "+absPath,Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(MainActivity.this, TimelapseActivity.class);
         intent.putExtra(Const.INTENT_KEY_FILEPATH, absPath);
         startActivity(intent);
+        finish();
     }
 
     @Override

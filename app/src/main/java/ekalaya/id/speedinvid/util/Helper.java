@@ -1,5 +1,8 @@
 package ekalaya.id.speedinvid.util;
 
+import android.content.Context;
+import android.util.DisplayMetrics;
+
 /**
  * Created by Femmy on 8/27/2017.
  */
@@ -37,4 +40,6 @@ public class Helper {
         }
         return last;
     }
+
+
 }

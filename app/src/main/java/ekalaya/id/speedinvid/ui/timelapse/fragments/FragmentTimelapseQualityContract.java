@@ -15,5 +15,7 @@ public class FragmentTimelapseQualityContract {
         void changeQualityResult(VideoSource vs, int qlty);
 
         void changeOrientationMode(VideoSource vs, Boolean orientation);
+
+        void changeRemovingAudio(VideoSource vs, Boolean remAudio);
     }
 }

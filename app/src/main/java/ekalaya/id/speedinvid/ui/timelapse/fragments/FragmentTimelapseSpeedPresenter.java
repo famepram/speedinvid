@@ -24,9 +24,10 @@ public class FragmentTimelapseSpeedPresenter extends BasePresenter<FragmentTimel
     public void changeSpeedVideo(VideoSource vs, int i) {
         double speed = 1;
         if(i < 50){
-            speed = i < 5 ? 0.1 : ((double)i /  50) ;
+            speed = i < 5 ? 0.5 : ((double)(i+50) /  100);
+            speed = Math.ceil(speed * 10) / 10 ;
         } else {
-            speed = Math.ceil(((double)i - 50) / 5);
+            speed = Math.ceil(((double)i - 50) / 10) ;
             speed = speed < 1 ? 1 : speed;
         }
         vs.setSpeed(speed);
